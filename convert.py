@@ -16,10 +16,14 @@ print("Gathering information...")
 for filename in glob.iglob('./**/*', recursive=True):
 	file = os.path.abspath(filename)
 	privCheck = command + '"' +file + '"'
-	priv = str(subprocess.check_output(privCheck), 'utf-8')
-	priv = priv[len(file):-1].replace(' ', '').splitlines()[:-2]
-	result[file] = priv
-	
+	try:
+		priv = str(subprocess.check_output(privCheck), 'utf-8')
+		priv = priv[len(file):-1].replace(' ', '').splitlines()[:-2]
+		priv.sort()
+		result[file] = ";".join(priv)
+	except:
+		print("Error while processing file "+str(file))
+		pass
 
 print("Generating CSV file...")
 (pd.DataFrame.from_dict(data=result, orient='index')
